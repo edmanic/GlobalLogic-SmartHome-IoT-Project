@@ -1,0 +1,11 @@
+sitemap globallogic_home label="GlobalLogic Home" {
+    Frame {
+        Group item=Office
+    }
+
+    Frame {
+        Text label="Temperature" icon="temperature" {
+            Default item=Office_Temperature label="Office"
+        }
+    }
+}

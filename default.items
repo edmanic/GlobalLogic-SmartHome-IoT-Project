@@ -1,0 +1,11 @@
+Group    Home                  "GlobalLogciSmartHouse"   <house>                                   ["Building"]
+
+Group    Home                 "GlobalLogic Home"   <house>                                  ["Building"]
+
+Group    F3                   "Third Floor"        <attic>         (Home)                   ["Attic"]
+
+Group    Office               "Office"             <office>        (Home)                   ["Room"]
+
+Number   Office_Temperature   "Temperature"        <temperature>   (Office, gTemperature)   ["Temperature"]   {channel="mqtt:topic:122ab330:TemperatureChannel"}
+
+Group:Number:AVG   gTemperature   "Temperature"   <temperature>   (Home)   ["Temperature"]

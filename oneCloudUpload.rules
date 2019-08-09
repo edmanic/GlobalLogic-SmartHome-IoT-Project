@@ -1,0 +1,39 @@
+rule "Cool Cloud Upload"
+when
+    Item LessCoolESP8266_RawRoom1 received update
+then 
+    //logInfo("Uselles", "Početak izvođenja: " + now().toString)
+    //val curtime = now()
+    logInfo("connection", CheckConnection_Online.state.toString)
+    //logInfo("currenttimetype", curtime.toString)
+    if(CheckConnection_Online.state == ON){
+       logInfo("dataUploaded", LessCoolESP8266_RawRoom1.state.toString)
+       executeCommandLine("python3@@/usr/local/bin/OnlineDataTransferScript.py@@\""+LessCoolESP8266_RawRoom1.state.toString+"\"",10000)
+       executeCommandLine("python3@@/usr/local/bin/temperatureAlarmHandling.py",10000)
+       executeCommandLine("python3@@/usr/local/bin/keypadReset.py",10000)
+       //logInfo("cloudTransfer", "Attempted to send payload!")
+    }
+    executeCommandLine("python3@@/usr/local/bin/MQTTRaspberryFeedback.py",10000)
+    //logInfo("UploadDone", "Upload is done!")
+    //logInfo("Uselles", "Kraj izvođenja: " + now().toString)
+end
+
+
+rule "Connection restored"
+when
+    Item CheckConnection_Online changed from OFF to ON
+then
+    val offlineTime = curItem.state.toString
+    logInfo("cloudTransfer", "Offline time was: " + offlineTime)
+    executeCommandLine("python3 /usr/local/bin/OfflineDataTransferScript.py " + offlineTime,10000)
+    logInfo("cloudTransfer", "Restoration completed!")
+end
+
+rule "Connection lost"
+when
+    Item CheckConnection_Online changed from ON to OFF
+then
+    val curtime = now()
+    curItem.sendCommand(curtime.toString)
+    logInfo("connectionLost", "Device went offline at: " + curtime.toString())
+end
